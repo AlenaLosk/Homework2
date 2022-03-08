@@ -29,6 +29,9 @@ public class TicTacToe extends Application {
     private final Figure3T[][] cells = new Figure3T[size][size];
     private final Logic3T logic = new Logic3T(cells);
 
+    public static void main(String... args) {
+        TicTacToe.launch(args);
+    }
     private Figure3T buildRectangle(int x, int y, int size) {
         Figure3T rect = new Figure3T();
         rect.setX(x * size);
@@ -87,21 +90,23 @@ public class TicTacToe extends Application {
         return gap;
     }
 
-    private void checkWinner() {
+    private boolean checkWinner() {
         String statisticFile = "Статистика_выигрышей.txt";
+        boolean result = false;
         if (this.logic.isWinnerX()) {
             players[0].setWin(true);
             writeWinResultToFile(statisticFile, players[0]);
-            whoIsNextPlayer = 0;
             this.showServiceInfo(String.format("Победили Крестики и игрок %s за %d действия(й)!",
                     players[0].getName(), players[0].getActions()));
+            result = true;
         } else if (this.logic.isWinnerO()) {
             players[1].setWin(true);
             writeWinResultToFile(statisticFile, players[1]);
-            whoIsNextPlayer = 0;
             this.showServiceInfo(String.format("Победили Нолики и игрок %s за %d действия(й)!",
                     players[1].getName(), players[1].getActions()));
+            result = true;
         }
+        return result;
     }
 
     private Group buildMarkX(double x, double y, int size) {
@@ -165,8 +170,9 @@ public class TicTacToe extends Application {
                         players[1].setActions(currentActions + 1);
                     }
                 }
-                this.checkWinner();
-                this.checkState();
+                if (this.checkWinner() || !this.checkState()) {
+                    whoIsNextPlayer = 0;
+                }
             }
         };
     }
